@@ -1,3 +1,7 @@
+= 0.3.0
+  - Changed gem manager to jeweler
+  - Changed test framework to Test::Unit / shoulda
+  - Compatibility with hpricot 0.8.2 and Ruby 1.9
 = 0.2.7
   - Added Microformat.timeout = accessor for controlling how long you wanna wait.
 
@@ -7,7 +11,7 @@
   - Fix bug in hEntry rel-tag [Mark Murphy]
 
 = 0.2.5
-  - Added ability to find ALL microformats on a page using Microformat.find.  
+  - Added ability to find ALL microformats on a page using Microformat.find.
     Only searches using loaded microformat classes, so make sure to just require 'mofo'
   - Added cute aliases for H* classes, e.g. hCard.find(:first => 'url') and hResume.find('resume.html')
 
@@ -36,7 +40,7 @@
 
 = 0.1.2
   - Upgraded to test/spec 0.3
-  - Fixed so tests run as Rails plugin 
+  - Fixed so tests run as Rails plugin
 
 = 0.1.1
   - Moved from RSpec to test/spec (in vendor/)
