@@ -16,8 +16,8 @@ begin
     p.url = "http://mofo.rubyforge.org/"
     p.author = 'Chris Wanstrath'
     p.email = "chris@ozmm.org"
-    p.extra_deps << ['hpricot', '>=0.4.59']
-    p.test_globs = 'test/*_test.rb' 
+    p.extra_deps << ['hpricot', '>= 0.5']
+    p.test_globs = 'test/*_test.rb'
   end
 
 rescue LoadError => boom

@@ -1,6 +1,6 @@
 require File.dirname(__FILE__) + '/test_helper'
 require 'mofo/hcard'
-
+#
 context "Multiple attributes within a container" do
   setup do
     $hcards    ||= HCard.find(:all => fixture(:hresume))

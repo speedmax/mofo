@@ -1,5 +1,5 @@
+gem 'hpricot', '>= 0.5'
 %w(rubygems set hpricot microformat/object microformat/string microformat/array open-uri ostruct timeout).each { |f| require f }
-gem 'hpricot', '>=0.4.59'
 
 class Microformat
   module Base
@@ -17,7 +17,7 @@ class Microformat
       [:first, :all].each { |key| target = @options[key] if @options[key] }
 
       extract_base_url! target
-      
+
       @doc = target.kind_of?(Hpricot::Elem) ? target : build_doc(@options[:text] ? @options : target)
 
       microformats = find_occurences(@doc)
@@ -43,9 +43,9 @@ class Microformat
     end
 
     # i have no idea what the hell this is doing
-    names_and_keys = proc do |attributes| 
+    names_and_keys = proc do |attributes|
       attributes.map do |att|
-        att.respond_to?(:keys) ? att.keys.first : att 
+        att.respond_to?(:keys) ? att.keys.first : att
       end
     end
 
@@ -66,7 +66,7 @@ class Microformat
   protected
     ##
     # DSL Related
-    # 
+    #
     def after_find(&block)
       @after_find_procs ||= Hash.new { |h,k| h[k] = [] }
       @after_find_procs[name] << block if block_given?
@@ -136,19 +136,19 @@ class Microformat
 
     def build_doc(source)
       case source
-      when String, File, StringIO     
+      when String, File, StringIO
         result = ''
         Timeout.timeout(@@timeout) { result = open(source) }
         Hpricot(result)
-      when Hpricot, Hpricot::Elements 
+      when Hpricot, Hpricot::Elements
         source
-      when Hash                       
+      when Hash
         Hpricot(source.delete(:text)) if source[:text]
       end
     end
 
     def find_occurences(doc)
-      doc/".#{@container}" 
+      doc/".#{@container}"
     end
 
     def build_class(microformat)
@@ -220,10 +220,10 @@ class Microformat
             target = is_hash ? attribute[key] : nil
             key = key.no_bang
             if name == :many
-              hash[key] ||= [] 
+              hash[key] ||= []
               hash[key] += found.map { |f| parse_element(f, target) }
             else
-              hash[key] = parse_element(found.first, target) 
+              hash[key] = parse_element(found.first, target)
             end
           end
           hash[key] = hash[key].first if hash[key].is_a?(Array) && hash[key].size == 1
@@ -235,12 +235,10 @@ class Microformat
 
     def extract_includes(doc)
       @includes ||= {}
-
       doc.search(".include").inject({}) do |hash, element|
-        target = element.attributes['data'] || element.attributes['href']
-
+        target = element.has_attribute?('data') ? element.attributes['data'] : element.attributes['href']
         return @includes[target] if @includes[target]
-
+        # puts "T: #{@doc/target}"
         unless (includes = @doc/target).empty?
           hash.merge @includes[target] = build_hash(includes)
         else
@@ -277,7 +275,7 @@ class Microformat
           klass = klass.respond_to?(:find) ? klass : nil
 
           found || parse_element(element, klass)
-        end 
+        end
       elsif target.is_a? Class
         target.find(@options.merge(:first => element))
       else
@@ -285,7 +283,7 @@ class Microformat
         when 'abbr' then element['title']
         when 'img'  then element['alt']
         when 'input' then element['name']
-        when 'form'  then element['action']  
+        when 'form'  then element['action']
         end || ''
 
         ret = (value.empty? ? element.innerHTML : value).strip
@@ -299,7 +297,7 @@ class Microformat
 
     def extract_base_url!(target)
       @options[:base_url] ||= @options[:base] || @options[:url]
-      @options[:base_url] ||= target[/^(http:\/\/[^\/]+)/] if target.respond_to?(:scan) 
+      @options[:base_url] ||= target[/^(http:\/\/[^\/]+)/] if target.respond_to?(:scan)
     end
   end
 
@@ -319,5 +317,6 @@ class MicroformatNotFound < Exception; end
 Mofo = Microformat
 
 # type & id are used a lot in uformats and deprecated in ruby.  no loss.
-OpenStruct.class_eval { undef :type, :id }
+# added respond_to test, because 1.9 doesn't have type and id anymore (halfbyte [15.02.2010])
+OpenStruct.class_eval { undef :type, :id } if OpenStruct.respond_to?(:type)
 Symbol.class_eval { def no_bang() to_s.sub('!','').to_sym end }
