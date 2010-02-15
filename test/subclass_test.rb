@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/test_helper'
+require 'test_helper'
 require 'mofo/hcard'
 
 module Formats
@@ -6,29 +6,35 @@ module Formats
   end
 end
 
-context "Subclassing an hCard" do
-  specify "should parse a page with an hcard" do
-    proc { Formats::Card.find(fixture(:fauxtank)) }.should.not.raise MicroformatNotFound
-  end
+class SubclassTest < Test::Unit::TestCase
+  context "Subclassing an hCard" do
+    should "parse a page with an hcard" do
+      assert_nothing_raised do
+        Formats::Card.find(fixture(:fauxtank))
+      end
+    end
 
-  specify "should raise an error if no hcard is found in strict mode" do
-    proc { Formats::Card.find(fixture(:fake), :strict => true) }.should.raise MicroformatNotFound
-  end
+    should "raise an error if no hcard is found in strict mode" do
+      assert_raise MicroformatNotFound do
+        Formats::Card.find(fixture(:fake), :strict => true)
+      end
+    end
 
-  specify "should return an empty array if no hcard is found" do
-    Formats::Card.find(fixture(:fake)).should.equal []
-  end
+    should "return an empty array if no hcard is found" do
+      assert_equal [], Formats::Card.find(fixture(:fake))
+    end
 
-  specify "should return nil if no hcard is found with :first" do
-    Formats::Card.find(:first => fixture(:fake)).should.equal nil
-  end
+    should "return nil if no hcard is found with :first" do
+      assert_nil Formats::Card.find(:first => fixture(:fake))
+    end
 
-  specify "should return nil if no hcard is found with :all" do
-    Formats::Card.find(:all => fixture(:fake)).should.equal []
-  end
+    should "return empty array if no hcard is found with :all" do
+      assert_equal [], Formats::Card.find(:all => fixture(:fake))
+    end
 
-  specify "should accept a :text option" do
-    Formats::Card.find(:text => open(fixture(:fauxtank)).read).should.not.equal []
-    Formats::Card.find(:text => open(fixture(:fauxtank)).read).should.not.equal nil
+    should "accept a :text option" do
+      assert_not_equal [], Formats::Card.find(:text => open(fixture(:fauxtank)).read)
+      assert_not_nil Formats::Card.find(:text => open(fixture(:fauxtank)).read)
+    end
   end
 end

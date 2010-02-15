@@ -1,37 +1,45 @@
 require 'rubygems'
 require 'rake'
-gem 'echoe', '=1.3'
-
-version = '0.2.16'
-
-ENV['RUBY_FLAGS'] = ""
+require File.join(File.dirname(__FILE__), "lib/mofo/version")
 
 begin
-  require 'echoe'
+  require 'jeweler'
 
-  Echoe.new('mofo', version) do |p|
-    p.rubyforge_name = 'mofo'
-    p.summary = "mofo is a ruby microformat parser"
-    p.description = "mofo is a ruby microformat parser"
-    p.url = "http://mofo.rubyforge.org/"
-    p.author = 'Chris Wanstrath'
-    p.email = "chris@ozmm.org"
-    p.extra_deps << ['hpricot', '>= 0.5']
-    p.test_globs = 'test/*_test.rb'
+  Jeweler::Tasks.new do |gemspec|
+    gemspec.name = "mofo"
+    gemspec.summary = "mofo is a ruby microformat parser"
+    gemspec.description = "mofo is a ruby microformat parser"
+    gemspec.email = "jan@krutisch.de"
+    gemspec.homepage = "http://github.com/halfbyte/mofo"
+    gemspec.authors = ["Chris Wanstrath", "Jan Krutisch"]
+    gemspec.version = Mofo::VERSION
+    gemspec.test_files = Dir.glob('test/*_test.rb')
   end
 
-rescue LoadError => boom
-  puts "You are missing a dependency required for meta-operations on this gem."
-  puts "#{boom.to_s.capitalize}."
+  Jeweler::GemcutterTasks.new
+
+rescue LoadError
+  puts "Jeweler not available. Install it with: gem install jeweler"
 end
 
-desc 'Generate RDoc documentation for mofo.'
-Rake::RDocTask.new(:rdoc) do |rdoc|
-  files = ['README', 'LICENSE', 'lib/**/*.rb']
-  rdoc.rdoc_files.add(files)
+require 'rake/testtask'
+Rake::TestTask.new(:test) do |test|
+  test.libs << 'lib' << 'test'
+  test.pattern = 'test/**/*_test.rb'
+  test.verbose = true
+end
+
+
+require 'rake/rdoctask'
+Rake::RDocTask.new do |rdoc|
+  version = Mofo::VERSION
+
   rdoc.main = "README" # page to start on
-  rdoc.title = "mofo"
-  rdoc.template = File.exists?(t="/Users/chris/ruby/projects/err/rock/template.rb") ? t : "/var/www/rock/template.rb"
-  rdoc.rdoc_dir = 'doc' # rdoc output folder
-  rdoc.options << '--inline-source'
+  rdoc.title = "mofo #{version}"
+
+  rdoc.rdoc_dir = 'rdoc'
+  rdoc.rdoc_files.include('README*')
+  rdoc.rdoc_files.include('LICENSE*')
+  rdoc.rdoc_files.include('CHAMGELOG*')
+  rdoc.rdoc_files.include('lib/**/*.rb')
 end

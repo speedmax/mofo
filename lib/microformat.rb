@@ -176,7 +176,7 @@ class Microformat
       end
 
       Array(object.instance_variables - original_ivars).each do |ivar|
-        object.properties << ivar.gsub('@','')
+        object.properties << ivar.to_s.gsub('@','')
       end
     end
 
