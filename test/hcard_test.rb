@@ -1,171 +1,178 @@
-require File.dirname(__FILE__) + '/test_helper'
+require 'test_helper'
 require 'mofo/hcard'
 require 'mofo/hreview'
 
-context "A simple hcard definition" do
-  specify "should parse a page with an hcard" do
-    proc { HCard.find(fixture(:fauxtank)) }.should.not.raise MicroformatNotFound
-  end
+class HCardTest < Test::Unit::TestCase
 
-  specify "should raise an error if no hcard is found in strict mode" do
-    proc { HCard.find(fixture(:fake), :strict => true) }.should.raise MicroformatNotFound
-  end
+  context "A simple hcard definition" do
+    should "parse a page with an hcard" do
+      assert_nothing_raised do
+        HCard.find(fixture(:fauxtank))
+      end
+    end
 
-  specify "should return an empty array if no hcard is found" do
-    HCard.find(fixture(:fake)).should.equal []
-  end
+    should "raise an error if no hcard is found in strict mode" do
+      assert_raise MicroformatNotFound do
+        HCard.find(fixture(:fake), :strict => true)
+      end
+    end
 
-  specify "should return nil if no hcard is found with :first" do
-    HCard.find(:first => fixture(:fake)).should.equal nil
-  end
+    should "return an empty array if no hcard is found" do
+      assert_equal [], HCard.find(fixture(:fake))
+    end
 
-  specify "should return nil if no hcard is found with :all" do
-    HCard.find(:all => fixture(:fake)).should.equal []
-  end
+    should "return nil if no hcard is found with :first" do
+      assert_nil HCard.find(:first => fixture(:fake))
+    end
 
-  specify "should accept a :text option" do
-    HCard.find(:text => open(fixture(:fauxtank)).read).should.not.equal []
-    HCard.find(:text => open(fixture(:fauxtank)).read).should.not.equal nil
-  end
-end
+    should "return empty array if no hcard is found with :all" do
+      assert_equal [], HCard.find(:all => fixture(:fake))
+    end
 
-context "The hCard found in the upcoming_single page" do
-  setup do
-    $upcoming_text = HCard.find(:text => open(fixture(:upcoming_single)).read) 
-    $upcoming_find = HCard.find(fixture(:upcoming_single))
-  end
-  
-  specify "should be identical whether passed as :text or found with default method" do
-    $upcoming_text.fn.should.equal                    $upcoming_find.fn
-    $upcoming_text.org.should.equal                   $upcoming_find.org
-    $upcoming_text.adr.base_url.should.equal          $upcoming_find.adr.base_url
-    $upcoming_text.adr.postal_code.should.equal       $upcoming_find.adr.postal_code
-    $upcoming_text.adr.locality.should.equal          $upcoming_find.adr.locality
-    $upcoming_text.adr.region.should.equal            $upcoming_find.adr.region
-    $upcoming_text.adr.street_address.should.equal    $upcoming_find.adr.street_address
-    $upcoming_text.geo.longitude.should.equal         $upcoming_find.geo.longitude
-    $upcoming_text.geo.latitude.should.equal          $upcoming_find.geo.latitude
-  end
-end
-
-context "The parsed fauxtank hCard object" do
-  setup do
-    $fauxtank ||= HCard.find(:first => fixture(:fauxtank))
-  end
-
-  specify "should be an instance of HCard" do
-    $fauxtank.should.be.an.instance_of HCard
-  end
-
-  specify "should have `fauxtank' as the nickname" do
-    $fauxtank.nickname.should.equal "fauxtank"
-  end
-
-  specify "should have two email addresses" do
-    $fauxtank.email.size.should.equal 2
-    $fauxtank.email.first.should.equal "fauxtank [at] gmail.com"
-    $fauxtank.email.last.should.equal "chris [at] fauxtank.com"
-  end
-  
-  specify "should have `Chris' as the given name" do
-    $fauxtank.n.given_name.should.equal "Chris"
-  end
-
-  specify "should have `Murphy' as the family name" do
-    $fauxtank.n.family_name.should.equal "Murphy"
-  end
-
-  specify "should have `Chicago' as the locality" do
-    $fauxtank.adr.locality.should.equal "Chicago"
-  end
-
-  specify "should have `United States' as the country-name" do
-    $fauxtank.adr.country_name.should.equal "United States"
-  end
-
-  specify "should have fauxtank's profile pic as the logo" do
-    $fauxtank.logo.should.equal "http://static.flickr.com/25/buddyicons/89622800@N00.jpg?1128967902"
-  end
-
-  specify "should know what properties it found" do
-    $fauxtank.properties.sort.should.equal ["fn", "note", "n", "email", "logo", "adr", "nickname", "title", "url"].sort
-  end
-end
-
-context "The parsed Bob hCard object" do
-  setup do
-    $bob ||= HCard.find(:first => fixture(:bob))
-  end
-  
-  specify "should have three valid emails with type information" do
-    $bob.email.value.size.should.equal 3
-    $bob.email.type.first.should.equal 'home'
-    $bob.email.value.first.should.equal 'bob@gmail.com'
-    $bob.email.type[1].should.equal 'work'
-    $bob.email.value[1].should.equal 'robert@yahoo.com'
-    $bob.email.type.last.should.equal 'home'
-    $bob.email.value.last.should.equal 'bobby@gmail.com'
-  end
-
-  specify "should have two valid telephone numbers with type information" do
-    $bob.tel.type.size.should.equal 2
-    $bob.tel.type.first.should.equal 'home'
-    $bob.tel.value.first.should.equal '707-555-9990'
-    $bob.tel.type.last.should.equal 'cell'
-    $bob.tel.value.last.should.equal '707-555-4756'
-  end
-
-  specify "should have a given, additional, and family name" do
-    $bob.n.given_name.should.equal 'Robert'
-    $bob.n.additional_name.should.equal 'Albert'
-    $bob.n.family_name.should.equal 'Smith'
-  end
-
-  specify "should have a valid postal code" do
-    $bob.adr.postal_code.should.equal '01234'
-  end
-
-  specify "should have a valid url" do
-    $bob.url.should.equal "http://nubhub.com/bob"
-  end
-end
-
-context "The parsed Stoneship hCard objects" do
-  setup do
-    $stoneship ||= HCard.find(:all => fixture(:stoneship))
-  end
-
-  specify "should only have String nicknames" do
-    $stoneship.collect { |h| h.nickname }.compact.uniq.each do |nickname|
-      nickname.should.be.an.instance_of String
+    should "accept a :text option" do
+      assert_not_equal [], HCard.find(:text => open(fixture(:fauxtank)).read)
+      assert_not_nil HCard.find(:text => open(fixture(:fauxtank)).read)
     end
   end
 
-  specify "should ignore broken urls" do
-    $stoneship.first.logo.should.be.nil
-  end
-end
+  context "The hCard found in the upcoming_single page" do
+    setup do
+      @upcoming_text = HCard.find(:text => open(fixture(:upcoming_single)).read)
+      @upcoming_find = HCard.find(fixture(:upcoming_single))
+    end
 
-context "The parsed simple hCard object" do
-  setup do
-    $simple ||= HCard.find(:first => fixture(:simple))
-  end
-
-  specify "should have an org string" do
-    $simple.org.should.be.an.instance_of String
-    $simple.org.should.equal "Err the Blog"
-  end
-
-  specify "should have an email string" do
-    $simple.email.should.be.an.instance_of String
-    $simple.email.should.equal "chris[at]ozmm[dot]org"
-  end
-
-  specify "should have a valid name" do
-    $simple.fn.should.equal "Chris Wanstrath"
+    should "be identical whether passed as :text or found with default method" do
+      assert_equal @upcoming_find.fn, @upcoming_text.fn
+      assert_equal @upcoming_find.org, @upcoming_text.org
+      assert_equal @upcoming_find.adr.base_url, @upcoming_text.adr.base_url
+      assert_equal @upcoming_find.adr.postal_code, @upcoming_text.adr.postal_code
+      assert_equal @upcoming_find.adr.locality, @upcoming_text.adr.locality
+      assert_equal @upcoming_find.adr.region, @upcoming_text.adr.region
+      assert_equal @upcoming_find.adr.street_address, @upcoming_text.adr.street_address
+      assert_equal @upcoming_find.geo.longitude, @upcoming_text.geo.longitude
+      assert_equal @upcoming_find.geo.latitude, @upcoming_text.geo.latitude
+    end
   end
 
-  specify "should have a valid url" do
-    $simple.url.should.equal "http://ozmm.org/"
+  context "The parsed fauxtank hCard object" do
+    setup do
+      @fauxtank ||= HCard.find(:first => fixture(:fauxtank))
+    end
+
+    should "be an instance of HCard" do
+      assert_instance_of HCard, @fauxtank
+    end
+
+    should "have `fauxtank' as the nickname" do
+      assert_equal "fauxtank", @fauxtank.nickname
+    end
+
+    should "have two email addresses" do
+      assert_equal 2, @fauxtank.email.size
+      assert_equal "fauxtank [at] gmail.com", @fauxtank.email.first
+      assert_equal "chris [at] fauxtank.com", @fauxtank.email.last
+    end
+
+    should "have `Chris' as the given name" do
+      assert_equal "Chris", @fauxtank.n.given_name
+    end
+
+    should "have `Murphy' as the family name" do
+      assert_equal "Murphy", @fauxtank.n.family_name
+    end
+
+    should "have `Chicago' as the locality" do
+      assert_equal "Chicago", @fauxtank.adr.locality
+    end
+
+    should "have `United States' as the country-name" do
+      assert_equal "United States", @fauxtank.adr.country_name
+    end
+
+    should "have fauxtank's profile pic as the logo" do
+      assert_equal "http://static.flickr.com/25/buddyicons/89622800@N00.jpg?1128967902", @fauxtank.logo
+    end
+
+    should "know what properties it found" do
+      assert_equal ["fn", "note", "n", "email", "logo", "adr", "nickname", "title", "url"].sort, @fauxtank.properties.sort
+    end
+  end
+
+  context "The parsed Bob hCard object" do
+    setup do
+      @bob ||= HCard.find(:first => fixture(:bob))
+    end
+
+    should "have three valid emails with type information" do
+      assert_equal 3, @bob.email.value.size
+      assert_equal 'home', @bob.email.type.first
+      assert_equal 'bob@gmail.com', @bob.email.value.first
+      assert_equal 'work', @bob.email.type[1]
+      assert_equal 'robert@yahoo.com', @bob.email.value[1]
+      assert_equal 'home', @bob.email.type.last
+      assert_equal 'bobby@gmail.com', @bob.email.value.last
+    end
+
+    should "have two valid telephone numbers with type information" do
+      assert_equal 2, @bob.tel.type.size
+      assert_equal 'home', @bob.tel.type.first
+      assert_equal '707-555-9990', @bob.tel.value.first
+      assert_equal 'cell', @bob.tel.type.last
+      assert_equal '707-555-4756', @bob.tel.value.last
+    end
+
+    should "have a given, additional, and family name" do
+      assert_equal 'Robert', @bob.n.given_name
+      assert_equal 'Albert', @bob.n.additional_name
+      assert_equal 'Smith', @bob.n.family_name
+    end
+
+    should "have a valid postal code" do
+      assert_equal '01234', @bob.adr.postal_code
+    end
+
+    should "have a valid url" do
+      assert_equal "http://nubhub.com/bob", @bob.url
+    end
+  end
+
+  context "The parsed Stoneship hCard objects" do
+    setup do
+      @stoneship ||= HCard.find(:all => fixture(:stoneship))
+    end
+
+    should "only have String nicknames" do
+      @stoneship.collect { |h| h.nickname }.compact.uniq.each do |nickname|
+        assert_instance_of String, nickname
+      end
+    end
+
+    should "ignore broken urls" do
+      assert_nil @stoneship.first.logo
+    end
+  end
+
+  context "The parsed simple hCard object" do
+    setup do
+      @simple ||= HCard.find(:first => fixture(:simple))
+    end
+
+    should "have an org string" do
+      assert_instance_of String, @simple.org
+      assert_equal "Err the Blog", @simple.org
+    end
+
+    should "have an email string" do
+      assert_instance_of String, @simple.email
+      assert_equal "chris[at]ozmm[dot]org", @simple.email
+    end
+
+    should "have a valid name" do
+      assert_equal "Chris Wanstrath", @simple.fn
+    end
+
+    should "have a valid url" do
+      assert_equal "http://ozmm.org/", @simple.url
+    end
   end
 end
