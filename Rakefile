@@ -14,6 +14,7 @@ begin
     gemspec.authors = ["Chris Wanstrath", "Jan Krutisch"]
     gemspec.version = Mofo::VERSION
     gemspec.test_files = Dir.glob('test/*_test.rb')
+    gemspec.add_dependency 'htmlentities'
   end
 
   Jeweler::GemcutterTasks.new

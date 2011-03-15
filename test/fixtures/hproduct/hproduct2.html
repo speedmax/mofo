@@ -1,0 +1,120 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+  <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+  <title>hProduct 2 - Top level optional multiple occurrence test</title>
+
+ <!-- This will be replace with one CSS file and one JavaScipt file -->
+  <link rel="stylesheet" href="../css/uftestsuite.css" type="text/css" />
+  <link rel="stylesheet" href="../../../testrunner/css/testrunner.css" type="text/css" />
+
+  <script type="text/javascript" src="../../testrunner/javascript/prototype-1.6.0.2.js"></script> 
+  <script type="text/javascript" src="../../testrunner/javascript/beautify.js"></script> 
+  <script type="text/javascript" src="../../testrunner/javascript/sumo/microformat.js"></script>
+  <script type="application/javascript;version=1.7" src="http://svn.mozilla.org/labs/operator/chrome/operator/content/Microformats/Microformats.js"></script>
+  <script type="text/javascript" src="../../testrunner/javascript/testrunner.js"></script>
+</head>
+<body>
+  <p><a href="../"><img border="0" id="testsuite-image" alt="Microformats test suite" src="../images/testsuite.gif" /></a><br /></p>
+
+  <div class="test-fixture">
+    <h1 class="summary">hProduct 2 - multiple occurrence test</h1>
+
+    <p class="description">
+      This page was design to test that values of a hProduct which are can have multiple occurrences are parsed correctly.
+    </p>
+
+    <p>From: <a href="default.htm"><span class="format">hProduct</span> test suite 0.3</a></p>
+
+    <p class="author vcard">
+      Author: <a class="url fn" href="http://georgebrock.com/">George Brocklehurst</a> 
+    </p>
+
+    <p>Tests:</p>
+    <table id="assetTable" cellpadding="0" cellspacing="0">
+      <thead>
+        <tr>
+          <th>Test</th>
+          <th>Result</th>
+          <th>Comment</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="assert">
+          <td class="test">hproduct[0].category[1]</td>
+          <td class="result">IsEqualTo("high-definition")</td>
+          <td class="comment">The category is a optional multiple value</td>
+        </tr>
+        <tr class="assert">
+          <td class="test">hproduct[0].photo[1]</td>
+          <td class="result">IsEqualTo("http://www.ufxtract.com/testsuite/images/photo.gif")</td>
+          <td class="comment">The photo is a optional multiple value</td>
+        </tr>
+        <tr class="assert">
+          <td class="test">hproduct[0].review[1]</td>
+          <td class="result">HasProperty(true)</td>
+          <td class="comment">The review is a optional multiple value</td>
+        </tr>
+        <tr class="assert">
+          <td class="test">hproduct[0].listing[1]</td>
+          <td class="result">HasProperty(true)</td>
+          <td class="comment">The listing is a optional multiple value</td>
+        </tr>
+        <tr class="assert">
+          <td class="test">hproduct[0].identifier[1]</td>
+          <td class="result">HasProperty(true)</td>
+          <td class="comment">The identifier is a optional multiple value</td>
+        </tr>
+      </tbody>
+    </table> 
+
+    <p>History:</p>
+    <ul>
+      <li class="history vevent">
+        <span class="summary">Created</span>: <abbr class="dtstart" title="2010-03-04">4 March 2010</abbr> 
+        <span class="description">by George Brocklehurst</span>
+      </li>
+    </ul>
+  </div>
+
+  <div id="uf">
+    <div class="hproduct">
+      <!-- This may not be the best semantic use of HTML element -->
+      <div class="fn">Samsung LE32B450</div>
+      <div>Categories: <span class="category">televisions</span>, <span class="category">high-definition</span></div>
+      <div>Photos:
+        <img class="photo" width="80" height="100" src="../images/photo.gif" alt="Photo of Samsung LE32B450" />
+        <img class="photo" width="80" height="100" src="../images/photo.gif" alt="Another photo of Samsung LE32B450" />
+      </div>
+      <div>Reviews:
+        <ul>
+          <li class="review hreview">
+            <span class="item"><span class="fn">Samsung LE32B450</span></span>:
+            <span class="summary">This television is a good all rounder.</span>
+          </li>
+          <li class="review hreview">
+            <span class="item"><span class="fn">Samsung LE32B450</span></span>:
+            <span class="summary">This TV is just awesome, perfect picture brilliant sound and so very easy to setup.</span>
+          </li>
+        </ul>
+      </div>
+      <div>Listings:
+        <ul>
+          <li class="listing">Buy from MyShop for &pound;10</li>
+          <li class="listing">Buy from TheirShop for &pound;20</li>
+        </ul>
+      </div>
+      <div>Identifier:
+        <ul>
+          <li class="identifier"><span class="type">model</span>: <span class="value">LE32B450</span></li>
+          <li class="identifier"><span class="type">sku</span>: <span class="value">ABC123</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <p><a rel="license" href="../license.txt">Some rights reserved</a></p>
+</body>
+
+</html>
